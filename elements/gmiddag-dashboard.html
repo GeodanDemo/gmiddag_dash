@@ -1,0 +1,325 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/star-rating/star-rating.html">
+<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<link href="../bower_components/iron-icons/maps-icons.html" rel="import">
+<link href="../bower_components/iron-icons/image-icons.html" rel="import">
+
+<!-- <link rel="import" href="./cow-element.html"> -->
+<link rel="import" href="./image-element.html">
+<link rel="import" href="./gmiddag-crossfilter.html">
+
+<script src="../bower_components/d3/d3.js" charset="utf-8"></script>
+<script src="../bower_components/topojson/topojson.js"></script>
+<script src="../bower_components/d3-plugins/geo/tile/tile.js"></script>
+<script src="../bower_components/d3.mappu/dist/d3.mappu.js"></script>
+
+<dom-module id="gmiddag-dashboard">
+<style>
+paper-header-panel {
+  height: 100%;
+  background: white;
+}
+#map {
+	height: 100%;
+	position: relative;
+	overflow: hidden;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	top: 0px;
+}
+#content {
+	position: absolute;
+	height: 100%;
+}
+
+
+#toast {
+	z-index: 101;
+}
+
+star-rating {
+	display: block;
+	position: relative;
+	margin: -5px;
+	left: 10px;
+	color: #ff4081;
+}
+paper-icon-button[active] {
+    color: orange;
+}
+
+path.cell {
+  fill: none;
+  stroke: lightGray;
+  pointer-events: all;
+}
+
+
+#cells.voronoi path.cell {
+  stroke: none;
+}
+
+#cells g:hover path.arc {
+  display: inherit;
+}
+
+#photopopup {
+	max-width: 600px;
+	max-height: 600px;
+}
+
+</style>
+<template>
+<!-- NON UI elements -->
+
+<div id='content' class='content fit'>
+	<paper-dialog id="popupDialog" opened="{{showPopupDialog}}" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<img id="photopopup" src="" on-click="closePopup">
+			<div class="card-content" align="center">
+				Door: {{popupUser}} <br>
+				<small>groep: {{popupGroup}}: {{popupTheme}}</small>
+				<star-rating id="popupRating" readonly="true" stars="5" rate="{{popupRating}}"></star-rating>
+			</div>
+	</paper-dialog>
+
+	<div id='map' class='fit'></div>
+	<gmiddag-crossfilter id='gmiddagcrossfilter'
+		filtphotos='{{filtphotos}}'
+	></gmiddag-crossfilter>	
+	<paper-toast id="toast" text="{{msg}}"></paper-toast>
+</div>
+
+</template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'gmiddag-dashboard',
+	properties: {
+		map: {
+			type: Object,
+			notify: true
+		},
+		userfeatures: {
+			type: Array
+		},
+		filtphotos: {
+			type: Array
+		},
+		userLayer: {
+			type: Object
+		},
+		photoLayer: {
+			type: Object
+		},
+		me: {
+			type: Object
+		},
+		showPhotoDialog: false,
+		photoRating: 0,
+		showPopupDialog: false,
+		popupRating: 0,
+		popupTheme: '',
+		msg: '',
+		imageElement: {
+			type: Object
+		}
+	},
+	observers: [
+		//'_usersChanged(userfeatures,userLayer)',
+		//'_trailsChanged(trailfeatures,trailLayer)',
+		'_photosChanged(filtphotos, photoLayer)'
+	],
+	_blah: function() {
+		console.log('_blah');
+	},
+	_filtphotos: function() {
+		console.log('_filtphotos');
+	},
+	_usersChanged: function(userfeatures, userLayer){
+		this.userLayer.data = userfeatures;
+
+	},
+	_trailsChanged: function(trailfeatures,trailLayer){
+		this.trailLayer.data = trailfeatures;
+        this.dovoronoi(trailfeatures);
+	},
+	_photosChanged: function(filtphotos, photoLayer){
+		var photoFeatures = filtphotos.map(function(d){
+			return {
+				id: d.photoid,
+				type: 'Feature',
+				geometry: {type: 'Point', coordinates: d.location},
+				properties: {
+					user: d.username,
+					group: d.groupid,
+					photorating: d.photorating,
+					location: d.location,
+					time: d.time
+				},
+				style: {
+					'marker-url': 'https://saturnus.geodan.nl/geodanmiddag/uploads/' + d.photoid +'_64.jpeg',
+					width: 64,
+					height: 64
+				}
+			};
+		});
+		this.photoLayer.data = photoFeatures;
+	},
+	ready:function(){
+		var self = this;
+		this.map = new d3.mappu.Map('map', {
+				//center: [5.123739, 52.096188],
+                center: [5.12, 52.095451],
+				zoom: 24,
+				minZoom: 10,
+				maxZoom: 24,
+				projection: d3.geo.mercator()
+		});
+
+		var layer = new d3.mappu.RasterLayer('layer1', {
+			ogc_type: 'tms',
+			url: 'https://saturnus.geodan.nl/mapproxy/map/tiles/nachtkaart/EPSG3857/{z}/{x}/{y}.png',
+			//url: 'http://tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+			opacity: 1
+		}).addTo(this.map);
+
+
+
+
+		var opacscale = d3.scale.linear().range([0.3,0.3,1]).domain([0,23,24]);
+		var opacfunc = function(){
+			return opacscale(self.map.zoom);
+		}
+		var groupscale = d3.scale.category20();
+		var bygroup = function(d){
+			return groupscale(d.properties.group);
+		}
+
+
+        var agescale = d3.scale.linear().range(['grey','grey','yellow']).domain([Infinity,1000*60*30,0]);
+        var byage = function(d){
+            return agescale(new Date().getTime() - d.properties.time);
+        }
+
+        this.trailLayer = new d3.mappu.VectorLayer('trailLayer',{
+            reproject: true,
+            visible: false,
+            style: {
+                fill: byage,
+                stroke: 'none'
+            }
+        }).addTo(this.map);
+		/*this.userLayer = new d3.mappu.VectorLayer('userLayer',{
+			reproject: true,
+			duration: 1000,
+			labelStyle: {
+				fill: bygroup,
+				stroke: 'none',
+				opacity: opacfunc
+			},
+			style: {
+				fill: bygroup,
+				stroke: 'none'
+			},
+			labelfield: 'name'
+		}).addTo(this.map);
+		*/
+		
+		var myopac = 0;
+		var radius = 0;
+		var self = this;
+
+		this.photoLayer = new d3.mappu.VectorLayer('photoLayer',{
+			reproject: true,
+			events: [
+				{
+					event: 'click',
+					action: function(d) {
+						self.popupPhoto(d);
+					}
+				}
+			]
+		}).addTo(this.map);
+ 		this.imageElement = this.$.imageelement;
+	},
+	attached: function(){
+		var self = this;
+		//TODO: this should be a promise or something...
+		window.setTimeout(function(){
+			self.map.resize();
+		},1000);
+	},
+
+	popupPhoto: function(d) {
+		var groupThemes = {
+			1: 'Zwerfafval',
+			2: 'Zwerfafval',
+			3: 'Natuur en Groen',
+			4: 'Natuur en Groen',
+			5: 'Jeugd',
+			6: 'Jeugd',
+			7: 'Sport en Gezondheid',
+			8: 'Sport en Gezondheid',
+			9: 'Vergrijzing',
+			10: 'Vergrijzing',
+			11: 'Duurzame mobiliteit',
+			12: 'Duurzame mobiliteit',
+			13: 'Onveiligheid',
+			14: 'Onveiligheid',
+			15: 'Achterstand',
+			16: 'Achterstand',
+			17: 'Welvaart',
+			18: 'Welvaart',
+			19: 'Innovatie',
+			20: 'Innovatie',
+			21: 'Onbekend',
+			22: 'Onbekend',
+			23: 'Onbekend',
+			24: 'Onbekend',
+			25: 'Onbekend',
+			26: 'Onbekend'
+		}
+
+		var popupImg = this.$.photopopup;
+		var url = 'https://saturnus.geodan.nl/geodanmiddag/uploads/' + d.id + '.jpeg';
+		popupImg.src = url;
+		//this.popupUrl = url;
+		this.popupUser = d.properties.user;
+		this.popupGroup = d.properties.group;
+		this.popupTheme = groupThemes[d.properties.group];
+		this.popupRating = d.properties.photorating;
+		//this.showPopupDialog = true;
+		var self = this;
+		popupImg.onload = function() {
+			self.showPopupDialog = true;
+		};
+
+	},
+
+	closePopup: function() {
+		this.showPopupDialog = false;
+	},
+
+	status: function(status){
+		this.msg = status;
+		this.$.toast.open();
+	}
+});
+</script>

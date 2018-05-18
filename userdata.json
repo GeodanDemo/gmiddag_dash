@@ -1,0 +1,485 @@
+{
+	"1460537829210" : {
+		"groupid" : 1,
+		"name" : "Test",
+		"age" : 0,
+		"gender" : "Anders",
+		"location" : [4.9127956, 52.3426452],
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460552831188" : {
+		"groupid" : 12,
+		"name" : "Ferdinand",
+		"age" : 47,
+		"gender" : "Man",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460552837440" : {
+		"groupid" : 2,
+		"name" : "Damiano Albani",
+		"age" : 32,
+		"gender" : "Man",
+		"location" : [5.1263312, 52.0953679],
+		"totaldistance" : 4.173058379464967,
+		"numphotos" : 18
+	},
+	"1460552856932" : {
+		"groupid" : 11,
+		"name" : "arendjan",
+		"age" : 53,
+		"gender" : "Man",
+		"location" : [4.8718826, 52.3635762],
+		"totaldistance" : 38.187921461320286,
+		"numphotos" : 25
+	},
+	"1460552862294" : {
+		"groupid" : 17,
+		"name" : "doekeler",
+		"age" : 41,
+		"gender" : "Man",
+		"location" : [5.1240295, 52.0954697],
+		"totaldistance" : 0.5112202058179265,
+		"numphotos" : 9
+	},
+	"1460552871561" : {
+		"groupid" : 13,
+		"name" : "Michel Paardekooper",
+		"age" : 24,
+		"gender" : "Man",
+		"location" : [5.1249423, 52.0939194],
+		"totaldistance" : 0,
+		"numphotos" : 1
+	},
+	"1460552874961" : {
+		"groupid" : 18,
+		"name" : "Ed van Gulik ",
+		"age" : 51,
+		"gender" : "Man",
+		"location" : [5.12350688, 52.0952997],
+		"totaldistance" : 0.8516353101585215,
+		"numphotos" : 14
+	},
+	"1460552892440" : {
+		"groupid" : 14,
+		"name" : "tom vanzieleghem",
+		"age" : 40,
+		"gender" : "Man",
+		"location" : [5.123849552618432, 52.09545241852771],
+		"totaldistance" : 0.1407085360101454,
+		"numphotos" : 0
+	},
+	"1460552895654" : {
+		"groupid" : 20,
+		"name" : "Julain",
+		"age" : 45,
+		"gender" : "Man",
+		"location" : [5.1238526310819426, 52.09548215852314],
+		"totaldistance" : 3.279559986165706,
+		"numphotos" : 17
+	},
+	"1460552901575" : {
+		"groupid" : 19,
+		"name" : "Josja Heerema",
+		"age" : 28,
+		"gender" : "Man",
+		"location" : [5.115709109236594, 52.09487761375689],
+		"totaldistance" : 2.7103654275929516,
+		"numphotos" : 6
+	},
+	"1460552942728" : {
+		"groupid" : 9,
+		"name" : "jeroen",
+		"age" : 34,
+		"gender" : "Man",
+		"location" : [5.123872688810573, 52.09537698983139],
+		"totaldistance" : 4.673420073440894,
+		"numphotos" : 12
+	},
+	"1460553056391" : {
+		"groupid" : 9,
+		"name" : "Iris",
+		"age" : 18,
+		"gender" : "Vrouw",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553069943" : {
+		"groupid" : 16,
+		"name" : "geert",
+		"age" : 21,
+		"gender" : "Man",
+		"location" : [5.1755913, 52.0917154],
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553091849" : {
+		"groupid" : 10,
+		"name" : "joost",
+		"age" : 53,
+		"gender" : "Man",
+		"location" : [5.123747019097209, 52.09522210992873],
+		"totaldistance" : 0.366129945537137,
+		"numphotos" : 8
+	},
+	"1460553314249" : {
+		"groupid" : 2,
+		"name" : "Frank",
+		"age" : 38,
+		"gender" : "Man",
+		"location" : [5.1238237, 52.0955362],
+		"totaldistance" : 3.2681575629546495,
+		"numphotos" : 13
+	},
+	"1460553324679" : {
+		"groupid" : 2,
+		"name" : "hannes",
+		"age" : 34,
+		"gender" : "Man",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553360796" : {
+		"groupid" : 9,
+		"name" : "Nikkie",
+		"age" : 24,
+		"gender" : "Vrouw",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553394025" : {
+		"groupid" : 6,
+		"name" : "Kevin",
+		"age" : 30,
+		"gender" : "Man",
+		"location" : [5.1248732, 52.0961309],
+		"totaldistance" : 0,
+		"numphotos" : 12
+	},
+	"1460553418557" : {
+		"groupid" : 19,
+		"name" : "Elbrig",
+		"age" : 24,
+		"gender" : "Vrouw",
+		"location" : [5.121963098649981, 52.09308606577301],
+		"totaldistance" : 1.195614591460144,
+		"numphotos" : 3
+	},
+	"1460553453466" : {
+		"groupid" : 5,
+		"name" : "Marnix",
+		"age" : 44,
+		"gender" : "Man",
+		"location" : [5.1280159, 52.0950618],
+		"totaldistance" : 1.4548467037408483,
+		"numphotos" : 6
+	},
+	"1460553483726" : {
+		"groupid" : 3,
+		"name" : "olaf",
+		"age" : 47,
+		"gender" : "Man",
+		"location" : [4.6097809, 52.38281],
+		"totaldistance" : 0.02723692795505888,
+		"numphotos" : 28
+	},
+	"1460553489391" : {
+		"groupid" : 1,
+		"name" : "Christian Moed",
+		"age" : 26,
+		"gender" : "Man",
+		"location" : [5.1234035, 52.0953508],
+		"totaldistance" : 2.742525127325346,
+		"numphotos" : 7
+	},
+	"1460553495753" : {
+		"groupid" : 18,
+		"name" : "jeroen de jon",
+		"age" : 20,
+		"gender" : "Man",
+		"location" : [5.123548200358751, 52.095336732503114],
+		"totaldistance" : 2.171770419917138,
+		"numphotos" : 4
+	},
+	"1460553509409" : {
+		"groupid" : 12,
+		"name" : "Ruben",
+		"age" : 45,
+		"gender" : "Man",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553514625" : {
+		"groupid" : 19,
+		"name" : "luc",
+		"age" : 44,
+		"gender" : "Man",
+		"location" : [5.11464703468647, 52.09458528335254],
+		"totaldistance" : 0.9356459519221538,
+		"numphotos" : 4
+	},
+	"1460553552390" : {
+		"groupid" : 1,
+		"name" : "marcel",
+		"age" : 4,
+		"gender" : "Nee",
+		"location" : [5.1231169, 52.0924667],
+		"totaldistance" : 0.18163877460325242,
+		"numphotos" : 5
+	},
+	"1460553569907" : {
+		"groupid" : 15,
+		"name" : "hallo",
+		"age" : 25,
+		"gender" : "Man",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553597695" : {
+		"groupid" : 18,
+		"name" : "harmen",
+		"age" : 45,
+		"gender" : "Man",
+		"location" : [5.1239818800240755, 52.09547985345125],
+		"totaldistance" : 0,
+		"numphotos" : 6
+	},
+	"1460553618262" : {
+		"groupid" : 4,
+		"name" : "Raymond Bijl",
+		"age" : 31,
+		"gender" : "Man",
+		"location" : [5.1229966, 52.0955545],
+		"totaldistance" : 0.4310457371305676,
+		"numphotos" : 5
+	},
+	"1460553618754" : {
+		"groupid" : 1,
+		"name" : "Astrid",
+		"age" : 4,
+		"gender" : "Anders",
+		"location" : [5.123406462376121, 52.09149245643251],
+		"totaldistance" : 2.990207417358627,
+		"numphotos" : 14
+	},
+	"1460553636938" : {
+		"groupid" : 4,
+		"name" : "joep",
+		"age" : 29,
+		"gender" : "Man",
+		"location" : [5.12519047, 52.0882274],
+		"totaldistance" : 0.6557640870389772,
+		"numphotos" : 3
+	},
+	"1460553644068" : {
+		"groupid" : 4,
+		"name" : "Mark",
+		"age" : 28,
+		"gender" : "Man",
+		"location" : [5.1248732, 52.0961309],
+		"totaldistance" : 2.1907859554108997,
+		"numphotos" : 2
+	},
+	"1460553671812" : {
+		"groupid" : 2,
+		"name" : "marja huiberts",
+		"age" : 42,
+		"gender" : "Vrouw",
+		"location" : [5.125304795806413, 52.09505568728977],
+		"totaldistance" : 0.2371930136432385,
+		"numphotos" : 9
+	},
+	"1460553692220" : {
+		"groupid" : 6,
+		"name" : "Lex",
+		"age" : 28,
+		"gender" : "Man",
+		"location" : [5.1234118, 52.0954688],
+		"totaldistance" : 2.7091586455104095,
+		"numphotos" : 9
+	},
+	"1460553694657" : {
+		"groupid" : 16,
+		"name" : "Bas",
+		"age" : 19,
+		"gender" : "Man",
+		"location" : [5.1241175, 52.0954288],
+		"totaldistance" : 0.7748283465428377,
+		"numphotos" : 7
+	},
+	"1460553723385" : {
+		"groupid" : 13,
+		"name" : "john ",
+		"age" : 46,
+		"gender" : "Man",
+		"location" : [5.1236122, 52.0955405],
+		"totaldistance" : 0.028851945825645306,
+		"numphotos" : 1
+	},
+	"1460553736330" : {
+		"groupid" : 10,
+		"name" : "Louis",
+		"age" : 61,
+		"gender" : "Man",
+		"location" : [5.1233126, 52.097931],
+		"totaldistance" : 0.03658298578464614,
+		"numphotos" : 1
+	},
+	"1460553744413" : {
+		"groupid" : 6,
+		"name" : "Paul",
+		"age" : 38,
+		"gender" : "Man",
+		"location" : [5.1239781081724205, 52.095548878472385],
+		"totaldistance" : 1.1096878744725593,
+		"numphotos" : 0
+	},
+	"1460553745178" : {
+		"groupid" : 19,
+		"name" : "Johan",
+		"age" : 33,
+		"gender" : "Man",
+		"location" : [5.1233628, 52.095451],
+		"totaldistance" : 1.3882727379610538,
+		"numphotos" : 1
+	},
+	"1460553791064" : {
+		"groupid" : 3,
+		"name" : "jasper",
+		"age" : 29,
+		"gender" : "Man",
+		"location" : [5.127869, 52.0998399],
+		"totaldistance" : 7.72932420339389,
+		"numphotos" : 8
+	},
+	"1460553810020" : {
+		"groupid" : 14,
+		"name" : "theo",
+		"age" : 55,
+		"gender" : "Man",
+		"location" : [5.365929586690524, 51.707253592182994],
+		"totaldistance" : 0,
+		"numphotos" : 3
+	},
+	"1460553821995" : {
+		"groupid" : 8,
+		"name" : "Rob van Mierlo",
+		"age" : 40,
+		"gender" : "Man",
+		"location" : [5.1232666, 52.0940313],
+		"totaldistance" : 3.2243292084960715,
+		"numphotos" : 9
+	},
+	"1460553831461" : {
+		"groupid" : 16,
+		"name" : "Hans van Triest",
+		"age" : 60,
+		"gender" : "Man",
+		"location" : [5.1223994, 52.0951339],
+		"totaldistance" : 0.33512353014119506,
+		"numphotos" : 2
+	},
+	"1460553858698" : {
+		"groupid" : 2,
+		"name" : "annita",
+		"age" : 44,
+		"gender" : "Vrouw",
+		"location" : [5.183658264582216, 52.02022335496919],
+		"totaldistance" : 0,
+		"numphotos" : 10
+	},
+	"1460553874132" : {
+		"groupid" : 6,
+		"name" : "tom",
+		"age" : 24,
+		"gender" : "Man",
+		"location" : [5.1234125, 52.0954754],
+		"totaldistance" : 1.5770062103543976,
+		"numphotos" : 1
+	},
+	"1460553882613" : {
+		"groupid" : 14,
+		"name" : "marianna",
+		"age" : 37,
+		"gender" : "Vrouw",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460553913265" : {
+		"groupid" : 13,
+		"name" : "sander",
+		"age" : 41,
+		"gender" : "Man",
+		"location" : [5.12398347259045, 52.09545424678558],
+		"totaldistance" : 0.05801424077013192,
+		"numphotos" : 8
+	},
+	"1460553932174" : {
+		"groupid" : 14,
+		"name" : "victor",
+		"age" : 56,
+		"gender" : "Man",
+		"location" : [5.120127797131539, 52.0921375277006],
+		"totaldistance" : 2.282176325611363,
+		"numphotos" : 1
+	},
+	"1460553945943" : {
+		"groupid" : 12,
+		"name" : "henri",
+		"age" : 100,
+		"gender" : "Man",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460554242876" : {
+		"groupid" : 12,
+		"name" : "siska",
+		"age" : 27,
+		"gender" : "Vrouw",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"1460554272359" : {
+		"groupid" : 7,
+		"name" : "PeterP",
+		"age" : 37,
+		"gender" : "Anders",
+		"location" : [5.1234418, 52.0954405],
+		"totaldistance" : 2.198822293676131,
+		"numphotos" : 18
+	},
+	"1460554490918" : {
+		"groupid" : 9,
+		"name" : "iris",
+		"age" : 18,
+		"gender" : "Vrouw",
+		"location" : [5.123534823261884, 52.0954453418993],
+		"totaldistance" : 1.5179163133232325,
+		"numphotos" : 4
+	},
+	"1460578984122" : {
+		"groupid" : 3,
+		"name" : "Tatiana",
+		"age" : 25,
+		"gender" : "Vrouw",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"controluser" : {
+		"groupid" : "control",
+		"name" : "controluser",
+		"age" : 0,
+		"gender" : "hermaphrodite",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	},
+	"dashboarduser" : {
+		"groupid" : "control",
+		"name" : "dashboarduser",
+		"age" : 0,
+		"gender" : "hermaphrodite",
+		"totaldistance" : 0,
+		"numphotos" : 0
+	}
+}

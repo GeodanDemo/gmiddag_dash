@@ -1,0 +1,608 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link href="../bower_components/dcjs/dc.min.css" rel="stylesheet" type="text/css">
+
+<link href="../bower_components/iron-icons/iron-icons.html" rel="import">
+<link href="../bower_components/iron-icons/av-icons.html" rel="import">
+
+<script src="../bower_components/d3/d3.js" charset="utf-8"></script>
+<script src="../bower_components/crossfilter/crossfilter.min.js"></script>
+<script src="../bower_components/dcjs/dc.min.js"></script>
+
+ 
+<dom-module id="gmiddag-crossfilter">
+<style is="custom-style">
+paper-toolbar {
+	--paper-toolbar-background: #7ad; /* changes the background to blue*/
+	--paper-toolbar-color: #fff; /* changes the foreground color to green */
+}
+</style>
+<style>
+#menu {
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 600px;
+	background: rgba(255, 255, 255, 0.8);
+	z-index: 101;
+}
+
+#buttons {
+	position: absolute;
+	top: 5px;
+	left: 160px;
+}
+
+.chart {
+	margin: 0px;
+	padding: 10px;
+}
+
+.chart-title {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	font-weight: bold;
+	color: #333333;
+	text-align: center;
+}
+
+#age-pie {
+	float: left;
+}
+
+#rating-pie {
+	float: right;
+}
+
+</style>
+<template>
+<!-- NON UI elements -->
+<div id='menu'>
+	<paper-toolbar>
+		<paper-button id='playbutton' on-tap="play">Play</paper-button>
+		<paper-button id='clearbutton' on-tap="clear">Clear filters</paper-button>
+		<div class='title'>{{timeTicker}}</div>
+		<!--<paper-button on-click="play"><iron-icon icon="av:play-arrow"></iron-icon>Play</paper-button>-->
+		<!--<paper-button on-click="resetFilters">Reset filters</paper-button>-->
+	</paper-toolbar>
+	<div id='charts'>
+		<div id='group-perf-chart' class='chart'><div class='chart-title'>Group performance</div></div>
+		<!--<div id='age-perf-chart' class='chart'><div class='chart-title'>Distance related to age</div></div>-->
+		<!--<div id='photo-count-chart' class='chart'><div class='chart-title'>Photos per minute</div></div>-->
+		<!--<div id='group-photos-chart' class='chart'><div class='chart-title'>Photos per group</div></div>-->
+		<!--<div id='group-photos-pie' class='chart'><div class='chart-title'>Photos per group</div></div>-->
+		<div id='pie-charts'>
+			<div class='chart-title'>Photos by...</div>
+			<div id='age-pie' class='chart'><div class='chart-title'>Age</div></div>
+			<div id='gender-pie' class='chart'><div class='chart-title'>Gender</div></div>
+			<div id='rating-pie' class='chart'><div class='chart-title'>Rating</div></div>
+		</div>
+		<div id='photo-chart' class='chart'><div class='chart-title'>Photos over time</div></div>
+	</div>
+</div>
+</template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'gmiddag-crossfilter',
+	properties: {
+		userData: {
+			type: Object,
+			value: {}
+		},
+		eventData:  {
+			type: Array
+		},
+		crossfilter: {
+			type: Object
+		},
+		filtphotos: {
+			type: Array,
+			value: function(){return []},
+			notify: true
+		},
+		timeDim: {
+			type: Object
+		},
+		timeTicker: ''
+	},
+	observers: [
+		//'makeEventData(photos, trails)'
+		//'_photoCF(photoData)'
+	],
+	ready: function(){
+		this.startTime = new Date(2016, 3, 13, 15, 7);
+		this.endTime = new Date(2016, 3, 13, 16, 30);
+		this.tickTime = new Date(this.startTime.getTime());
+
+		var self = this;
+		d3.json("/sites/gmiddag_dash/userdata.json", function(error, json) {
+			if (error) return console.warn(error);
+			self.userData = json;
+			d3.json("/sites/gmiddag_dash/eventdata.json", function(error, json) {
+				self.eventData = json;
+				self.makeCharts();
+				self.play();
+				//dc.renderAll();
+				//dc.redrawAll();
+				//self.filtphotos = self.timeDim.top(Infinity).filter(function(d){return d.photoid});
+			});			
+		});	
+	},
+	attached: function(){
+	},
+	play: function() {
+		if (this.playing) {
+			this.stop();
+			return;
+		}
+		this.playing = true;
+		this.$.playbutton.innerHTML = 'Stop';
+		
+		var self = this;
+		var rendered = false;
+		var timeFormat = d3.time.format("%d-%m-%Y %H:%M");
+		this.tickTime = new Date(this.startTime.getTime());
+		this.timer = setInterval(
+			function(){ 
+				if (self.timeDim) {
+					self.tickTime.setMilliseconds(self.tickTime.getMilliseconds() + 60000);
+					self.timeTicker = timeFormat(self.tickTime);
+					if (self.tickTime > self.endTime) {
+						self.stop();
+					} else {
+						self.timeDim.filterRange([self.startTime, self.tickTime]);
+						self.filtphotos = self.timeDim.top(Infinity).filter(function(d){return d.photoid});
+						if (!rendered) dc.renderAll();
+						rendered = true;
+						dc.redrawAll();
+					}
+				} 
+			}, 
+		500);
+	},
+	stop: function() {
+		clearInterval(this.timer);
+		var timeFormat = d3.time.format("%d-%m-%Y %H:%M");
+		this.tickTime = new Date(this.endTime.getTime());
+		this.timeTicker = timeFormat(this.tickTime);
+		this.timeDim.filterRange([this.startTime, this.endTime]);
+		this.filtphotos = this.timeDim.top(Infinity).filter(function(d){return d.photoid});
+		dc.redrawAll();
+		this.playing = false;
+		this.$.playbutton.innerHTML = 'Play';
+	},
+	clear: function() {
+		dc.filterAll();
+		dc.redrawAll();
+	},
+	makeCharts: function() {
+		var self = this;
+		crossfilter = crossfilter(this.eventData);
+		this.crossfilter = crossfilter;
+
+		var timeDim = crossfilter.dimension(function(d){
+			return d3.time.minute(new Date(d.time));
+		});
+		this.timeDim = timeDim;
+		/*var userDim = crossfilter.dimension(function(d){
+			return d.userid;
+		});*/
+		var timeDim2 = crossfilter.dimension(function(d){
+			return d3.time.minute(new Date(d.time));
+		});
+		var groupDim = crossfilter.dimension(function(d){
+			return d.groupid;
+		});
+		/*var ageDim = crossfilter.dimension(function(d){
+			return d.age;
+		});*/
+		var ageBin = 15;
+		var ageDimBin = crossfilter.dimension(function(d){
+			return Math.floor(d.age / ageBin) * ageBin;
+		});
+		var genderDim = crossfilter.dimension(function(d){
+			return d.gender;
+		});
+		var ratingDim = crossfilter.dimension(function(d){
+			return d.photorating;
+		});
+
+		var filterFunc = function(){
+			self.filtphotos = self.timeDim.top(Infinity).filter(function(d){return d.photoid});
+		};
+		
+		/*var photosPerGroup = groupDim.group().reduceSum(function(d) {
+			return d.photoid ? 1 : 0;
+		});
+		
+		var groupPhotosPie = dc.pieChart('#group-photos-pie');
+		groupPhotosPie
+			.width(200)
+			.height(200)
+			.radius(80)
+			.innerRadius(20)
+			.colors(d3.scale.category20())
+			.dimension(groupDim)
+			.group(photosPerGroup)
+			.transitionDuration(500);	
+		*/
+		
+		var photosByAge = ageDimBin.group().reduceSum(function(d) {
+			return d.photoid ? 1 : 0;
+		});
+		
+		var agePie = dc.pieChart('#age-pie');
+		agePie
+			.width(180)
+			.height(180)
+			.radius(70)
+			.innerRadius(20)
+			.colors(d3.scale.category10())
+			.dimension(ageDimBin)
+			.group(photosByAge)
+			.label(function(d) {
+					return d.key + '-' + (d.key + ageBin);
+				})
+			.title(function(d) {
+					return d.key + '-' + (d.key + ageBin) + ' years:\n' + d.value + ' photo' + (d.value != 1 ? 's' : '');
+				})
+			.transitionDuration(500);	
+		agePie.on('filtered', filterFunc);
+		
+		/*var genderSum = genderDim.group().reduce(
+			// Add
+			function(p, v) {
+				if (!(v.userid in p)) p[v.userid] = 0;
+				++p[v.userid];
+				return p;
+			},
+			// Remove
+			function(p, v) {
+				if (v.userid in p) {
+					--p[v.userid];
+					if (p[v.userid] === 0) delete p[v.userid];
+				}
+				return p;
+			},
+			// Initial
+			function() {
+				return {}
+			}
+		);*/
+		
+		var photosByGender = genderDim.group().reduceSum(function(d) {
+			return d.photoid ? 1 : 0;
+		});
+			
+		var genderPie = dc.pieChart('#gender-pie');
+		genderPie
+			.width(180)
+			.height(180)
+			.radius(70)
+			.innerRadius(20)
+			.colors(d3.scale.category10())
+			.dimension(genderDim)
+			.group(photosByGender)
+			.title(function(d) {
+					return d.key + ':\n' + d.value + ' photo' + (d.value != 1 ? 's' : '');
+				})
+			.transitionDuration(500);	
+		genderPie.on('filtered', filterFunc);
+		
+		var photosByRating = ratingDim.group().reduceSum(function(d) {
+			return d.photoid ? 1 : 0;
+		});
+		
+		var ratingPie = dc.pieChart('#rating-pie');
+		ratingPie
+			.width(180)
+			.height(180)
+			.radius(70)
+			.innerRadius(20)
+			.colors(d3.scale.category10())
+			.dimension(ratingDim)
+			.group(photosByRating)
+			.title(function(d) {
+					return d.key + ' stars:\n' + d.value + ' photo' + (d.value != 1 ? 's' : '');
+				})
+			.transitionDuration(500);	
+		ratingPie.on('filtered', filterFunc);
+
+		var reduceAdd = function (p, v) {
+			if (p.userDists[v.userid])
+				++p.userDists[v.userid];
+			else 
+				p.userDists[v.userid] = 1;
+			p.totalDistance += v.distance * 1000;
+			p.numUsers = Object.keys(p.userDists).length;
+			p.avgDistance = p.numUsers ? (p.totalDistance / p.numUsers) : 0;
+			if (v.photoid) {
+				++p.numPhotos;
+				p.totalRating += v.photorating;
+				p.avgRating = p.totalRating / p.numPhotos;
+			}
+			return p;
+		};
+		
+		var reduceRemove = function (p, v) {
+			if (p.userDists[v.userid]) {
+				--p.userDists[v.userid];
+				if (p.userDists[v.userid] <= 0)
+					delete p.userDists[v.userid];
+				p.totalDistance -= v.distance * 1000;
+				p.numUsers = Object.keys(p.userDists).length;
+				p.avgDistance = p.numUsers ? (p.totalDistance / p.numUsers) : 0;
+			}
+			if (v.photoid) {
+				--p.numPhotos;
+				p.totalRating -= v.photorating;
+				p.avgRating = p.numPhotos > 0 ? p.totalRating / p.numPhotos : 0;
+			}
+			return p;
+		};
+
+		var reduceInitial = function () {
+			return {
+				userDists: {},
+				numUsers: 0,
+				totalDistance: 0,
+				avgDistance: 0,
+				numPhotos: 0, 
+				totalRating: 0, 
+				avgRating: 0
+			};	
+		};
+
+		var photosOverTime = timeDim2.group().reduceSum(function(d){
+			return d.photoid ? 1 : 0;
+		});
+		var photosOverTimeCumulative = {
+			all:function () {
+				var cumulate = 0;
+				var g = [];
+				photosOverTime.all().forEach(function(d,i) {
+					cumulate += d.value;
+					g.push({key:d.key,value: cumulate})
+				});
+				return g;
+			}
+		};
+
+		var photoChart = dc.barChart('#photo-chart');
+		photoChart
+			.width(600)
+			.height(300)
+			.margins({top: 10, right: 60, bottom: 40, left: 40})
+			.transitionDuration(500)
+			.dimension(timeDim2)
+			.group(photosOverTime)
+			.x(d3.time.scale().domain([this.startTime, this.endTime]))
+			//.y(d3.scale.linear().domain([0, 500]))
+			.xAxisLabel('Time')
+			.yAxisLabel('Photos / minute')
+			.elasticY(true)
+			.brushOn(true)
+			.centerBar(true)
+			.xUnits(function(){return 80});
+			//.colors('red');
+			/*.compose([
+				dc.barChart(photoChart)
+					.group(photosOverTime)
+					.brushOn(false)
+					.colors('#DD4030')
+				,
+				dc.lineChart(photoChart)
+					.group(photosOverTimeCumulative)
+					.useRightYAxis(true)
+					.brushOn(false)
+				])
+			.rightYAxisLabel("Cumulative photos");*/
+		photoChart.xAxis().ticks(8);
+		photoChart.yAxis().ticks(6);
+		//photoChart.rightYAxis().ticks(6);
+		photoChart.on('filtered', filterFunc);
+		photoChart.xAxis().tickFormat(d3.time.format('%H:%M'));
+		
+		var groupPerformance = groupDim.group().reduce(reduceAdd, reduceRemove, reduceInitial);
+		
+		var numberFormat = d3.format('.1f');
+		var bubbleChart = dc.bubbleChart('#group-perf-chart');
+		bubbleChart
+			.width(600)
+			.height(300)
+			.margins({top: 10, right: 40, bottom: 40, left: 40})
+			.transitionDuration(500)
+			.dimension(groupDim)
+			.group(groupPerformance)
+			.colors(d3.scale.category20())
+			.colorAccessor(function (p) { return p.key; })
+			.keyAccessor(function (p) { return p.value.avgDistance })
+			.valueAccessor(function (p) { return p.value.avgRating; }) //return p.value.numPhotos; })
+			.radiusValueAccessor(function (p) { return p.value.numPhotos; }) //return p.value.avgRating + 0.1; })		
+			.x(d3.scale.linear().domain([0, 6500]))
+			.y(d3.scale.linear().domain([0, 5]))
+			.r(d3.scale.linear().domain([0, 200]))
+			.renderHorizontalGridLines(true)
+			.renderVerticalGridLines(true)
+			.xAxisLabel('Distance (m)')
+			.yAxisLabel('Average rating')
+			.renderLabel(true)
+			.label(function (p) { return p.key; })
+			.title(function (p) {
+				return [
+					'Group ' + p.key,
+					'Participants: ' + p.value.numUsers,
+					'Theme: TODO',
+					'Average distance: ' + Math.round(p.value.avgDistance) + ' m',
+					'Number of photos: ' + p.value.numPhotos,
+					'Average rating: ' + numberFormat(p.value.avgRating) + ' stars'
+				].join('\n');
+			});
+		bubbleChart.xAxis().ticks(7);	
+		bubbleChart.yAxis().ticks(6);	
+		bubbleChart.legend(dc.legend());
+
+		bubbleChart.on('filtered', filterFunc);
+		
+		/*
+		var agePerformance = ageDim.group().reduce(reduceAdd, reduceRemove, reduceInitial);
+
+		var ageChart = dc.barChart('#age-perf-chart');
+		ageChart
+			.width(500)
+			.height(200)
+			.margins({top: 30, right: 40, bottom: 40, left: 40})
+			.transitionDuration(500)
+			.dimension(ageDim)
+			.group(agePerformance)
+			//.valueAccessor(function (p) { return p.value.ratingAvg; }) //return p.value.numPhotos; })
+			.valueAccessor(function (p) { return p.value.avgDistance })
+			.centerBar(true)
+			//.gap(4)
+			//.round(d3.time.month.round)
+			//.alwaysUseRounding(true)
+			//.xUnits(function(){return 5})
+			.x(d3.scale.linear().domain([0, 65]))
+			.y(d3.scale.linear().domain([0, 4000]))
+			.xAxisLabel('Age')
+			.yAxisLabel('Distance');
+		ageChart.xAxis().ticks(7);	
+		ageChart.yAxis().ticks(5);	*/
+		//this.timeDim.filterRange([this.startTime, this.endTime]);
+		//dc.renderAll();
+		//dc.redrawAll();		
+	}
+
+	/*_loaded: function() {
+
+		this.makeUserData();
+		this.makeEventData();
+		this.makeCharts();
+		
+		var tickTime = new Date(this.startTime.getTime());
+		var self = this;
+		var rendered = false;
+		return;
+		var timer = setInterval(
+			function(){ 
+				if (self.timeDim) {
+					//console.log('start: ' + self.startTime);
+					//console.log('tick: ' + tickTime);
+					//console.log('end: ' + endTime);
+					tickTime.setMilliseconds(tickTime.getMilliseconds() + 60000);
+					if (tickTime > self.endTime)
+						clearInterval(timer); //tickTime = new Date(self.startTime.getTime());
+					self.timeDim.filterRange([self.startTime, tickTime]);
+					self.filtphotos = self.timeDim.top(Infinity).filter(function(d){return d.photoid});
+					if (!rendered) dc.renderAll();
+					rendered = true;
+					dc.redrawAll();
+				} 
+			}, 500);
+	},*/
+	/*
+	makeUserData: function(){
+		if (!this.loaded)
+			return;
+
+		//curTime = new Date().getTime();
+		//if ( (curTime - this._lastUsersChanged) < 1000 ) return;
+		//this._lastUsersChanged = curTime;
+		//console.log('_usersChanged');
+
+		this.users.filter(function(d){
+			return d.data('group') && d.data('group') != 26;
+		}).forEach(function(d) {
+			var id = d.id();
+			this.userData[id] = {
+				groupid: d.data('group'),
+				name: d.data('name'),
+				age: Math.abs(d.data('age')),
+				gender: d.data('sex'),
+				location: d.data('location'),
+				totaldistance: d.data('totaldistance') ? d.data('totaldistance') : 0,
+				numphotos: d.data('numphotos') ? d.data('numphotos') : 0
+			};
+		}, this);
+	},
+	makeEventData: function() {
+		if (!this.loaded)
+			return;
+
+		function calcDist(pos1, pos2) {
+			var R = 6371; // km
+			var dLon = (pos2[0] - pos1[0]).toRad();
+			var dLat = (pos2[1] - pos1[1]).toRad();
+			var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+					Math.cos(pos1[1].toRad()) * Math.cos(pos2[1].toRad()) *
+					Math.sin(dLon / 2) * Math.sin(dLon / 2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			var d = R * c;
+			return d;
+		}
+		Number.prototype.toRad = function() {
+			return this * Math.PI / 180;
+		}
+
+		var self = this;
+		var photoData = this.photos.filter(function(d){
+			// filter out unknown or unwanted users and records outside of the time window
+			return self.userData[d.creator().id()] && d.updated() > self.startTime && d.updated() < self.endTime;
+		}).map(function(d) {
+			var id = d.creator().id();
+			return {
+				userid: id,
+				groupid: self.userData[id].groupid,
+				username: self.userData[id].name,
+				age: self.userData[id].age,
+				gender: self.userData[id].gender,
+				time: d.updated(),
+				location: d.data('location'),
+				distance: 0,
+				photoid: d.data('photoid'),
+				photorating: d.data('photorating'),
+			};
+		});
+
+		var userLoc = {};
+		var trailData = this.trails.filter(function(d){
+			// filter out unknown or unwanted users and records outside of the time window
+			return self.userData[d.data('userid')] && d.updated() > self.startTime && d.updated() < self.endTime;
+		}).sort(function(a, b) { 
+			return a.updated() - b.updated();
+		}).map(function(d) {
+			var id = d.data('userid');
+			var res = {
+				userid: id,
+				groupid: self.userData[id].groupid,
+				username: self.userData[id].name,
+				age: self.userData[id].age,
+				gender: self.userData[id].gender,
+				time: d.updated(),
+				location: d.data('location'),
+				distance: 0,
+				photoid: null,
+				photorating: 0
+			};
+			if (userLoc[id]) {
+				res.distance = calcDist(userLoc[id], res.location);
+			}
+			userLoc[id] = res.location;
+						
+			return res;
+		});
+		
+		
+		this.eventData = photoData.concat(trailData).sort(function(a, b) { // need to sort concatenated arrays again
+			return a.time - b.time;
+		});
+		this.makeCharts();
+	},*/
+	
+});
+</script>
